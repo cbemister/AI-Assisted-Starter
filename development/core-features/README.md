@@ -8,13 +8,18 @@ This directory contains standardized implementation guidelines and best practice
 
 ### 📁 [Authentication & Authorization](./authentication/)
 Implementation patterns for user authentication and authorization systems.
+- **Admin User Account Creation** patterns for cross-application use
+- **Shared Admin Credentials** patterns with security considerations
+- **Enterprise RBAC** with hierarchical permissions and admin privileges
 - JWT, OAuth, and session-based authentication
 - Security best practices and vulnerability prevention
-- Role-based access control (RBAC) patterns
 - Framework-specific integration guides
 
 ### 📁 [Database Layer](./database/)
 Database design, configuration, and optimization guidelines.
+- **Neon PostgreSQL** integration patterns for production/cloud databases
+- **SQLite** integration patterns for local development and lightweight applications
+- **Technology Decision Matrix** for choosing between database systems
 - ORM/ODM configuration and best practices
 - Migration strategies and versioning
 - Query optimization and performance tuning

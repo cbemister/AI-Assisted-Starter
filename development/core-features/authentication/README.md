@@ -47,12 +47,13 @@ authentication/
 ├── best-practices.md           # Security guidelines and implementation standards
 ├── common-patterns.md          # Reusable authentication patterns and code templates
 ├── troubleshooting.md          # Common issues and resolution strategies
-├── jwt-implementation.md       # JWT-specific implementation guide
-├── oauth-implementation.md     # OAuth 2.0/OIDC implementation guide
-├── session-implementation.md   # Session-based authentication guide
 ├── rbac-patterns.md           # Role-based access control implementation
-├── security-checklist.md      # Security audit and compliance checklist
-└── framework-guides/
+├── shared-admin-patterns.md   # Cross-application admin authentication
+├── jwt-implementation.md       # JWT-specific implementation guide (planned)
+├── oauth-implementation.md     # OAuth 2.0/OIDC implementation guide (planned)
+├── session-implementation.md   # Session-based authentication guide (planned)
+├── security-checklist.md      # Security audit and compliance checklist (planned)
+└── framework-guides/           # Framework-specific guides (planned)
     ├── react-auth.md          # React-specific authentication patterns
     ├── vue-auth.md            # Vue.js authentication implementation
     ├── angular-auth.md        # Angular authentication patterns

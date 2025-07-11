@@ -44,7 +44,7 @@
 
 ## AI-Assisted Development Structure
 
-### Sub-Phase 1: Planning & Setup (Max 1 Hour)
+### Phase 1: Planning & Setup (Max 1 Hour)
 **AI Context Window Scope**: Initial planning and environment setup
 - **Duration**: {{SUBPHASE_1_DURATION}} (≤ 60 minutes)
 - **Deliverables**:
@@ -54,7 +54,7 @@
   - [ ] Dependencies identified and documented
 - **AI Handoff Notes**: {{SUBPHASE_1_HANDOFF_NOTES}}
 
-### Sub-Phase 2: Core Implementation (Max 1 Hour)
+### Phase 2: Core Implementation (Max 1 Hour)
 **AI Context Window Scope**: Primary feature development
 - **Duration**: {{SUBPHASE_2_DURATION}} (≤ 60 minutes)
 - **Deliverables**:
@@ -64,7 +64,7 @@
   - [ ] Progress commit made
 - **AI Handoff Notes**: {{SUBPHASE_2_HANDOFF_NOTES}}
 
-### Sub-Phase 3: Integration & Testing (Max 1 Hour)
+### Phase 3: Integration & Testing (Max 1 Hour)
 **AI Context Window Scope**: Feature integration and validation
 - **Duration**: {{SUBPHASE_3_DURATION}} (≤ 60 minutes)
 - **Deliverables**:
@@ -74,7 +74,7 @@
   - [ ] Integration commit made
 - **AI Handoff Notes**: {{SUBPHASE_3_HANDOFF_NOTES}}
 
-### Sub-Phase 4: Polish & Documentation (Max 1 Hour)
+### Phase 4: Polish & Documentation (Max 1 Hour)
 **AI Context Window Scope**: Final refinements and documentation
 - **Duration**: {{SUBPHASE_4_DURATION}} (≤ 60 minutes)
 - **Deliverables**:

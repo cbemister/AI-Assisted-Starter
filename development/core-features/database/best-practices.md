@@ -472,30 +472,352 @@ SELECT pg_start_backup('base_backup');
 SELECT pg_stop_backup();
 ```
 
+## Neon PostgreSQL Integration Best Practices
+
+### Neon-Specific Configuration
+```javascript
+// Optimized Neon PostgreSQL connection
+import { Pool } from 'pg';
+
+const neonPool = new Pool({
+  connectionString: process.env.NEON_DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false
+  },
+  // Neon-optimized settings
+  max: 20,                      // Neon supports up to 100 concurrent connections
+  min: 5,                       // Maintain minimum connections for performance
+  idleTimeoutMillis: 30000,     // Close idle connections after 30s
+  connectionTimeoutMillis: 2000, // Quick timeout for failed connections
+  statement_timeout: 30000,     // 30s query timeout
+  query_timeout: 30000,         // 30s query timeout
+  application_name: 'myapp_production'
+});
+
+// Neon connection health monitoring
+neonPool.on('connect', (client) => {
+  console.log('New Neon client connected');
+
+  // Set session-level optimizations
+  client.query(`
+    SET statement_timeout = '30s';
+    SET lock_timeout = '10s';
+    SET idle_in_transaction_session_timeout = '60s';
+  `);
+});
+
+neonPool.on('error', (err, client) => {
+  console.error('Neon client error:', err);
+});
+```
+
+### Neon Performance Optimization
+```sql
+-- Neon-specific performance settings
+-- Enable parallel query execution
+SET max_parallel_workers_per_gather = 4;
+SET max_parallel_workers = 8;
+
+-- Optimize for Neon's storage layer
+SET random_page_cost = 1.1;  -- Neon has fast random access
+SET seq_page_cost = 1.0;     -- Sequential reads are also fast
+
+-- Connection-level optimizations
+SET shared_preload_libraries = 'pg_stat_statements';
+SET track_activity_query_size = 2048;
+SET log_min_duration_statement = 1000; -- Log slow queries
+```
+
+### Neon Branching Integration
+```javascript
+// Neon database branching for development
+class NeonBranchManager {
+  constructor(apiKey, projectId) {
+    this.apiKey = apiKey;
+    this.projectId = projectId;
+    this.baseUrl = 'https://console.neon.tech/api/v2';
+  }
+
+  async createBranch(branchName, parentBranch = 'main') {
+    const response = await fetch(`${this.baseUrl}/projects/${this.projectId}/branches`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${this.apiKey}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        branch: {
+          name: branchName,
+          parent_id: parentBranch
+        }
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to create branch: ${response.statusText}`);
+    }
+
+    return await response.json();
+  }
+
+  async getBranchConnectionString(branchId) {
+    const response = await fetch(`${this.baseUrl}/projects/${this.projectId}/branches/${branchId}`, {
+      headers: {
+        'Authorization': `Bearer ${this.apiKey}`
+      }
+    });
+
+    const branch = await response.json();
+    return branch.connection_uris[0].connection_uri;
+  }
+}
+
+// Usage in development workflow
+const branchManager = new NeonBranchManager(
+  process.env.NEON_API_KEY,
+  process.env.NEON_PROJECT_ID
+);
+
+// Create feature branch for development
+const featureBranch = await branchManager.createBranch('feature-user-auth');
+const featureDbUrl = await branchManager.getBranchConnectionString(featureBranch.branch.id);
+```
+
+## SQLite Integration Best Practices
+
+### SQLite Development Configuration
+```javascript
+// Optimized SQLite setup for development
+import Database from 'better-sqlite3';
+import path from 'path';
+import fs from 'fs';
+
+class SQLiteManager {
+  constructor(dbPath = './data/development.sqlite') {
+    // Ensure data directory exists
+    const dir = path.dirname(dbPath);
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+
+    this.db = new Database(dbPath, {
+      verbose: process.env.NODE_ENV === 'development' ? console.log : null,
+      fileMustExist: false
+    });
+
+    this.configureSQLite();
+  }
+
+  configureSQLite() {
+    // Performance optimizations
+    this.db.pragma('journal_mode = WAL');
+    this.db.pragma('synchronous = NORMAL');
+    this.db.pragma('cache_size = 1000000');
+    this.db.pragma('temp_store = memory');
+    this.db.pragma('mmap_size = 268435456'); // 256MB
+
+    // Enable foreign keys
+    this.db.pragma('foreign_keys = ON');
+
+    // Set busy timeout
+    this.db.pragma('busy_timeout = 30000');
+  }
+
+  // Transaction wrapper
+  transaction(fn) {
+    return this.db.transaction(fn);
+  }
+
+  // Prepared statement caching
+  prepare(sql) {
+    if (!this.statements) {
+      this.statements = new Map();
+    }
+
+    if (!this.statements.has(sql)) {
+      this.statements.set(sql, this.db.prepare(sql));
+    }
+
+    return this.statements.get(sql);
+  }
+
+  close() {
+    if (this.statements) {
+      this.statements.clear();
+    }
+    this.db.close();
+  }
+}
+```
+
+### SQLite to PostgreSQL Migration Pattern
+```javascript
+// Database migration utility for moving from SQLite to PostgreSQL
+class DatabaseMigrator {
+  constructor(sqliteDb, postgresPool) {
+    this.sqlite = sqliteDb;
+    this.postgres = postgresPool;
+  }
+
+  async migrateTables() {
+    const tables = ['users', 'user_profiles', 'sessions'];
+
+    for (const table of tables) {
+      console.log(`Migrating table: ${table}`);
+      await this.migrateTable(table);
+    }
+  }
+
+  async migrateTable(tableName) {
+    // Get SQLite data
+    const data = this.sqlite.prepare(`SELECT * FROM ${tableName}`).all();
+
+    if (data.length === 0) {
+      console.log(`No data to migrate for ${tableName}`);
+      return;
+    }
+
+    // Prepare PostgreSQL insert
+    const columns = Object.keys(data[0]);
+    const placeholders = columns.map((_, i) => `$${i + 1}`).join(', ');
+    const insertSQL = `
+      INSERT INTO ${tableName} (${columns.join(', ')})
+      VALUES (${placeholders})
+      ON CONFLICT DO NOTHING
+    `;
+
+    const client = await this.postgres.connect();
+    try {
+      await client.query('BEGIN');
+
+      for (const row of data) {
+        const values = columns.map(col => row[col]);
+        await client.query(insertSQL, values);
+      }
+
+      await client.query('COMMIT');
+      console.log(`Migrated ${data.length} rows for ${tableName}`);
+    } catch (error) {
+      await client.query('ROLLBACK');
+      console.error(`Migration failed for ${tableName}:`, error);
+      throw error;
+    } finally {
+      client.release();
+    }
+  }
+}
+```
+
+## Database Technology Decision Matrix
+
+### When to Use Neon PostgreSQL
+**✅ Recommended for:**
+- Production applications requiring scalability
+- Applications with complex queries and relationships
+- Multi-user applications with concurrent access
+- Applications requiring ACID compliance
+- Cloud-native applications
+- Applications with advanced data types (JSON, arrays, etc.)
+- Applications requiring read replicas or high availability
+
+**Configuration Example:**
+```javascript
+// Production Neon configuration
+const productionConfig = {
+  connectionString: process.env.NEON_DATABASE_URL,
+  ssl: { rejectUnauthorized: false },
+  max: 20,
+  min: 5,
+  idleTimeoutMillis: 30000,
+  connectionTimeoutMillis: 2000
+};
+```
+
+### When to Use SQLite
+**✅ Recommended for:**
+- Local development and testing
+- Prototyping and MVP development
+- Single-user applications
+- Desktop applications
+- Applications with simple data requirements
+- Embedded applications
+- Applications requiring zero-configuration setup
+
+**Configuration Example:**
+```javascript
+// Development SQLite configuration
+const developmentConfig = {
+  filename: './data/development.sqlite',
+  options: {
+    verbose: console.log,
+    fileMustExist: false
+  },
+  pragmas: {
+    journal_mode: 'WAL',
+    synchronous: 'NORMAL',
+    foreign_keys: 'ON'
+  }
+};
+```
+
+### Migration Strategy: SQLite → Neon PostgreSQL
+```javascript
+// Environment-based database selection
+function getDatabaseConfig() {
+  const environment = process.env.NODE_ENV || 'development';
+
+  switch (environment) {
+    case 'development':
+    case 'test':
+      return {
+        type: 'sqlite',
+        config: {
+          filename: `./data/${environment}.sqlite`,
+          options: { verbose: console.log }
+        }
+      };
+
+    case 'staging':
+    case 'production':
+      return {
+        type: 'postgresql',
+        config: {
+          connectionString: process.env.NEON_DATABASE_URL,
+          ssl: { rejectUnauthorized: false }
+        }
+      };
+
+    default:
+      throw new Error(`Unknown environment: ${environment}`);
+  }
+}
+```
+
 ## Methodology-Specific Guidelines
 
-### MVP/Rapid Implementation
-- Use SQLite for development, PostgreSQL for production
-- Basic ORM configuration with default settings
-- Essential indexes on primary and foreign keys
-- Simple backup strategy (daily dumps)
-- Basic monitoring with application logs
+### MVP/Rapid Implementation (2-4 weeks)
+- **Database Choice**: SQLite for development, Neon PostgreSQL for production
+- **ORM**: Prisma with basic configuration
+- **Indexes**: Primary keys and foreign keys only
+- **Backup**: Neon automatic backups
+- **Monitoring**: Basic application logging
 
-### Balanced/Standard Implementation
-- Normalized database design with performance considerations
-- Optimized ORM configuration with connection pooling
-- Strategic indexing based on query patterns
-- Automated backup and recovery procedures
-- Performance monitoring and alerting
+### Balanced/Standard Implementation (4-8 weeks)
+- **Database Choice**: Neon PostgreSQL with branching for feature development
+- **ORM**: Prisma with optimized connection pooling
+- **Indexes**: Strategic indexing based on query patterns
+- **Backup**: Automated backups with point-in-time recovery
+- **Monitoring**: Query performance monitoring and alerting
 
-### Comprehensive/Enterprise Implementation
-- Multi-database architecture with read replicas
-- Advanced query optimization and caching
-- Comprehensive monitoring and alerting
-- High availability and disaster recovery
-- Security compliance and audit logging
+### Comprehensive/Enterprise Implementation (8-12 weeks)
+- **Database Choice**: Neon PostgreSQL with read replicas
+- **ORM**: Advanced Prisma configuration with custom middleware
+- **Indexes**: Comprehensive indexing strategy with performance analysis
+- **Backup**: Multi-region backup strategy with disaster recovery
+- **Monitoring**: Full observability stack with custom metrics
 
 ---
 
-*Last Updated: 2025-07-10*
-*Database Support: PostgreSQL, MySQL, MongoDB, Redis, SQLite*
+*Last Updated: 2025-07-11*
+*Database Support: Neon PostgreSQL, SQLite, PostgreSQL, MySQL, MongoDB, Redis*
+*Integration: Neon Branching, SQLite Development, Migration Strategies*

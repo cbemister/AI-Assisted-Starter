@@ -43,20 +43,22 @@ This directory provides standardized patterns for implementing robust database l
 
 ```
 database/
-├── README.md                    # This overview file
-├── best-practices.md           # Database design and optimization guidelines
-├── common-patterns.md          # Reusable database patterns and schemas
-├── troubleshooting.md          # Common database issues and solutions
-├── migration-strategies.md     # Database migration and versioning
-├── performance-tuning.md       # Query optimization and performance
-├── orm-configuration.md        # ORM/ODM setup and configuration
-├── backup-recovery.md          # Backup and disaster recovery strategies
-└── database-specific/
-    ├── postgresql.md          # PostgreSQL-specific patterns
-    ├── mysql.md               # MySQL implementation guide
-    ├── mongodb.md             # MongoDB patterns and practices
-    ├── redis.md               # Redis caching and session storage
-    └── sqlite.md              # SQLite for development and testing
+├── README.md                       # This overview file
+├── best-practices.md              # Database design and optimization guidelines
+├── common-patterns.md             # Reusable database patterns and schemas
+├── troubleshooting.md             # Common database issues and solutions
+├── sqlite-integration.md          # SQLite configuration and development patterns
+├── technology-decision-matrix.md  # Database technology selection framework
+├── migration-strategies.md        # Database migration and versioning (planned)
+├── performance-tuning.md          # Query optimization and performance (planned)
+├── orm-configuration.md           # ORM/ODM setup and configuration (planned)
+├── backup-recovery.md             # Backup and disaster recovery strategies (planned)
+└── database-specific/             # Database-specific guides (planned)
+    ├── postgresql.md              # PostgreSQL-specific patterns
+    ├── mysql.md                   # MySQL implementation guide
+    ├── mongodb.md                 # MongoDB patterns and practices
+    ├── redis.md                   # Redis caching and session storage
+    └── neon-postgresql.md         # Neon PostgreSQL cloud integration
 ```
 
 ## Database Design Principles
