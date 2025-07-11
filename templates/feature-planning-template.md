@@ -3,6 +3,11 @@
 
 **Instructions**: Copy this template for each new feature and fill in all sections before beginning development. This template is optimized for AI-assisted development with 1-hour sub-phase constraints and methodology-specific guidance.
 
+**Completion Strategy Integration**: For systematic planning of multiple features, use the Completion Strategy Template System:
+- Generate completion strategy: `./workflows/generate-completion-strategy.sh --project-name "YourProject" --methodology "your-methodology"`
+- Reference: `templates/README-completion-strategy.md` for detailed guidance
+- Scale to 100+ features: Use completion strategy for consistent, efficient feature planning
+
 ---
 
 # Feature: {{FEATURE_NAME}}

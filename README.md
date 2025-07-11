@@ -85,6 +85,8 @@ ai-assisted-starter/                    # Complete methodology toolkit
 │   ├── prd-template.md                # Product Requirements Document template
 │   ├── roadmap-template.md            # Project roadmap template
 │   ├── feature-planning-template.md   # Feature specification template
+│   ├── completion-strategy-template.md # Systematic feature planning completion strategy
+│   ├── README-completion-strategy.md  # Completion strategy system documentation
 │   ├── knowledge/                     # Knowledge management templates
 │   │   ├── lessons-learned/           # Lesson documentation templates
 │   │   └── prevention-strategies/     # Prevention strategy templates
@@ -104,6 +106,7 @@ ai-assisted-starter/                    # Complete methodology toolkit
 │   ├── methodology-selection.sh       # Interactive methodology selection
 │   ├── methodology-decision-tree.md   # Decision framework documentation
 │   ├── generate-prd.sh               # AI-assisted PRD generation
+│   ├── generate-completion-strategy.sh # Automated completion strategy generation
 │   └── phase-transition.sh           # Phase transition guidance
 ├── ai-prompts/                        # Pre-written AI prompt templates
 │   ├── conception/                    # Project conception prompts
@@ -140,6 +143,9 @@ ai-assisted-starter/                    # Complete methodology toolkit
 
 # Guide transitions between development phases
 ./workflows/phase-transition.sh [from_phase] [to_phase]
+
+# Generate systematic completion strategy for large projects
+./workflows/generate-completion-strategy.sh --project-name "MyProject" --methodology "business-value"
 ```
 
 ### Setup Scripts (Windows)
