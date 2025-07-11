@@ -3,6 +3,18 @@
 I need a PRD in markdown format for a full feature [app_idea] with [integration]
 
 # Augment Code
+CONDITIONAL
+I'd like to review @PRD.md and expand it based off @prd-template.md (if required)
+
+Based off the information in @PRD.md and @SOLO_DEVELOPMENT_BEST_PRACTICES.md, I'd like to customize @new-project-setup-prompt.md and @roadmap-template.md to match the application that I'd like to build and to help streamline the development process
+
+CONDITIONAL
+The phases in the @ROADMAP.md are too big and need to be split into sub-phases so that they can each be completed in under 1 hour of ai assisted development
+
+
+Based off the sub-phases listed in the @ROADMAP.md, I'd like to create a feature document for each sub phase using @feature-planning-template.md. These templates should be put in the @development/planning folder and there should be one created for each sub-phase. I want each sub-phase to take no longer than 1 hour of development time using ai assisted development.
+
+Create a memory to update @ROADMAP.md as phases and sub-phases are completed then start phase-0.1
 
 ## Prompts
 Enhance the PRD.md file based on the best practices outlined in the @SOLO_DEVELOPMENT_BEST_PRACTICES.md
