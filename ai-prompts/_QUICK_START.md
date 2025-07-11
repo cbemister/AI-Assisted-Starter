@@ -14,8 +14,7 @@ Based off the information in @PRD.md and @SOLO_DEVELOPMENT_BEST_PRACTICES.md, I'
 CONDITIONAL
 The phases in the @ROADMAP.md are too big and need to be split into sub-phases so that they can each be completed in under 1 hour of ai assisted development
 
-
-Based off the sub-phases listed in the @ROADMAP.md, I'd like to create a feature document for each sub phase using @feature-planning-template.md. These templates should be put in the @development/planning folder and there should be one created for each sub-phase. I want each sub-phase to take no longer than 1 hour of development time using ai assisted development.  first, create a completion strategy to be able to speed up the process of creating all of these template planning documents.  then proceed to creating the templates.
+Based off the sub-phases listed in the @ROADMAP.md, I'd like to create a feature document for each sub phase using @feature-planning-template.md. These templates should be put in the @development/planning folder and there should be one created for each sub-phase. I want each sub-phase to take no longer than 1 hour of development time using ai assisted development.  Refer to @completion-strategy-template.md for guidance on how to create a completion strategy for this process.
 
 Create a memory to update @ROADMAP.md as phases and sub-phases are completed then start phase-0.1
 
